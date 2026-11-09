@@ -1,5 +1,6 @@
 import tkinter as tk
-from tkinter import ttk, messagebox, Menu
+from tkinter import Menu, messagebox, ttk
+
 from PIL import Image, ImageTk
 
 pbl = [0, 0, 0]
@@ -10,14 +11,14 @@ newlst = []
 queued_images = []
 
 images = {
-    "Light Hit": "assets/light_hit.png",
-    "Medium Hit": "assets/medium_hit.png",
-    "Heavy Hit": "assets/heavy_hit.png",
-    "Draw": "assets/draw.png",
-    "Punch": "assets/punch.png",
-    "Bend": "assets/bend.png",
-    "Upset": "assets/upset.png",
-    "Shrink": "assets/shrink.png",
+    "Лёгкий удар": "assets/light_hit.png",
+    "Средний удар": "assets/medium_hit.png",
+    "Тяжёлый удар": "assets/heavy_hit.png",
+    "Волочение": "assets/draw.png",
+    "Пробивание": "assets/punch.png",
+    "Сгибание": "assets/bend.png",
+    "Осаживание": "assets/upset.png",
+    "Усадка": "assets/shrink.png",
 }
 
 
@@ -33,19 +34,16 @@ def update_pbl(value):
 
 
 def update_pbl2(value):
-    global pbl2
     pbl2.append(value)
     update_label2()
     add_image_to_queue(value)
 
 
 def update_label():
-    global pressedL
     pressedL.config(text=pbl)
 
 
 def update_label2():
-    global pressedL2
     pressedL2.config(text=pbl2)
 
 
@@ -92,16 +90,11 @@ def clear_result():
 
 
 def calce():
-    global pbl2
-    global pressedL2
     coord = sum(pbl2)
-    pressedL2.config(text=f"The end coordinate is {coord}")
+    pressedL2.config(text=f"Конечная координата: {coord}")
 
 
 def calculatepath():
-    global resultP
-    global pbl
-    global cente
     newlst = []
     a = pbl[2]
     b = pbl[1]
@@ -111,8 +104,8 @@ def calculatepath():
         cn = int(cn)
         bf = ((cn - a) - b) - c
         fs = 0
-    except:
-        resultP.config(text="Error! Put end coordinate in the entrybox!")
+    except ValueError:
+        resultP.config(text="Ошибка! Введите конечную координату в поле ввода.")
         return
 
     while fs != bf:
@@ -143,21 +136,21 @@ def calculatepath():
     for index, action in enumerate(newlst):
         action_name = None
         if action == 2:
-            action_name = "Punch"
+            action_name = "Пробивание"
         elif action == 7:
-            action_name = "Bend"
+            action_name = "Сгибание"
         elif action == 13:
-            action_name = "Upset"
+            action_name = "Осаживание"
         elif action == 16:
-            action_name = "Shrink"
+            action_name = "Усадка"
         elif action == -3:
-            action_name = "Light Hit"
+            action_name = "Лёгкий удар"
         elif action == -6:
-            action_name = "Medium Hit"
+            action_name = "Средний удар"
         elif action == -9:
-            action_name = "Heavy Hit"
+            action_name = "Тяжёлый удар"
         elif action == -15:
-            action_name = "Draw"
+            action_name = "Волочение"
 
         if action_name in images:
             img = ImageTk.PhotoImage(
@@ -171,13 +164,13 @@ def calculatepath():
 
 
 def about():
-    tk.messagebox.showinfo(
-        title="About",
-        message="""This is a program to help with anvil minigame in TerraFirmaCraft, a Minecraft mod made by Robert "Bioxx" Anthony, Amanda "Kittychanley" Halek, and others.
+    messagebox.showinfo(
+        title="О программе",
+        message="""Это программа-помощник для мини-игры с наковальней в TerraFirmaCraft — моде для Minecraft от Robert "Bioxx" Anthony, Amanda "Kittychanley" Halek и других.
 
-Program author: dzhemvrot (enhanced by Taeko-ar)
-Program version: 2.0
-Program restributed using GPL-3.0 license""",
+Автор программы: dzhemvrot (доработал Taeko-ar)
+Версия программы: 2.0
+Программа распространяется по лицензии GPL-3.0""",
     )
 
 
@@ -186,7 +179,7 @@ def quitting():
 
 
 root = tk.Tk()
-root.title("Tab Widget")
+root.title("Помощник наковальни TFC")
 root.rowconfigure(0, weight=1)
 root.columnconfigure(0, weight=1)
 
@@ -196,8 +189,8 @@ tabControl.grid(row=0, column=0, sticky="nsew")
 tab1 = ttk.Frame(tabControl)
 tab2 = ttk.Frame(tabControl)
 
-tabControl.add(tab1, text="Path")
-tabControl.add(tab2, text="End")
+tabControl.add(tab1, text="Путь")
+tabControl.add(tab2, text="Конец")
 
 tab1.rowconfigure(0, weight=1)
 tab1.columnconfigure(0, weight=1)
@@ -208,13 +201,11 @@ menubar = Menu(root)
 root.config(menu=menubar)
 
 file_menu = Menu(menubar, tearoff=0)
-file_menu.add_command(label="Exit", command=quitting)
-menubar.add_cascade(label="File", menu=file_menu)
-menubar.add_command(label="About", command=about)
+file_menu.add_command(label="Выход", command=quitting)
+menubar.add_cascade(label="Файл", menu=file_menu)
+menubar.add_command(label="О программе", command=about)
 
-ttk.Label(tab1, text="Calculate the path").grid(
-    column=2, row=0, padx=30, pady=0
-)
+ttk.Label(tab1, text="Расчёт пути").grid(column=2, row=0, padx=30, pady=0)
 pressedL = ttk.Label(tab1, text=pbl)
 pressedL.grid(column=2, row=1, padx=0, pady=0)
 
@@ -228,45 +219,45 @@ for i in range(5):
     tab1.columnconfigure(i, weight=1)
     tab1.rowconfigure(i, weight=1)
 
-ttk.Button(tab1, text="Light Hit", command=lambda: update_pbl(-3)).grid(
+ttk.Button(tab1, text="Лёгкий удар", command=lambda: update_pbl(-3)).grid(
     column=0, row=2, padx=10, pady=10
 )
-ttk.Button(tab1, text="Medium Hit", command=lambda: update_pbl(-6)).grid(
+ttk.Button(tab1, text="Средний удар", command=lambda: update_pbl(-6)).grid(
     column=1, row=2, padx=10, pady=10
 )
-ttk.Button(tab1, text="Heavy Hit", command=lambda: update_pbl(-9)).grid(
+ttk.Button(tab1, text="Тяжёлый удар", command=lambda: update_pbl(-9)).grid(
     column=0, row=3, padx=10, pady=10
 )
-ttk.Button(tab1, text="Draw", command=lambda: update_pbl(-15)).grid(
+ttk.Button(tab1, text="Волочение", command=lambda: update_pbl(-15)).grid(
     column=1, row=3, padx=10, pady=10
 )
-ttk.Button(tab1, text="Punch", command=lambda: update_pbl(2)).grid(
+ttk.Button(tab1, text="Пробивание", command=lambda: update_pbl(2)).grid(
     column=3, row=2, padx=10, pady=10
 )
-ttk.Button(tab1, text="Bend", command=lambda: update_pbl(7)).grid(
+ttk.Button(tab1, text="Сгибание", command=lambda: update_pbl(7)).grid(
     column=4, row=2, padx=10, pady=10
 )
-ttk.Button(tab1, text="Upset", command=lambda: update_pbl(13)).grid(
+ttk.Button(tab1, text="Осаживание", command=lambda: update_pbl(13)).grid(
     column=3, row=3, padx=10, pady=10
 )
-ttk.Button(tab1, text="Shrink", command=lambda: update_pbl(16)).grid(
+ttk.Button(tab1, text="Усадка", command=lambda: update_pbl(16)).grid(
     column=4, row=3, padx=10, pady=10
 )
 
 cente = ttk.Entry(tab1)
 cente.grid(column=2, row=3)
-ttk.Button(tab1, text="Calculate", command=calculatepath).grid(
+ttk.Button(tab1, text="Рассчитать", command=calculatepath).grid(
     column=2, row=4, padx=10, pady=10
 )
-ttk.Button(tab1, text="Reset Queue", command=reset_queue).grid(
+ttk.Button(tab1, text="Сбросить очередь", command=reset_queue).grid(
     column=2, row=5, padx=10, pady=10
 )
 
 resultP = ttk.Label(tab1, text="")
 resultP.grid(column=2, row=7, padx=0, pady=0)
 
-# Tab 2 (End)
-ttk.Label(tab2, text="Calculate the end coordinate").grid(
+# Вкладка 2 (Конец)
+ttk.Label(tab2, text="Расчёт конечной координаты").grid(
     column=2, row=0, padx=30, pady=0
 )
 pressedL2 = ttk.Label(tab2, text="")
@@ -276,35 +267,35 @@ tab2.columnconfigure(0, weight=1)
 tab2.rowconfigure(0, weight=1)
 tab2.columnconfigure(4, weight=1)
 
-ttk.Button(tab2, text="Light Hit", command=lambda: update_pbl2(-3)).grid(
+ttk.Button(tab2, text="Лёгкий удар", command=lambda: update_pbl2(-3)).grid(
     column=0, row=2, padx=10, pady=10
 )
-ttk.Button(tab2, text="Medium Hit", command=lambda: update_pbl2(-6)).grid(
+ttk.Button(tab2, text="Средний удар", command=lambda: update_pbl2(-6)).grid(
     column=1, row=2, padx=10, pady=10
 )
-ttk.Button(tab2, text="Heavy Hit", command=lambda: update_pbl2(-9)).grid(
+ttk.Button(tab2, text="Тяжёлый удар", command=lambda: update_pbl2(-9)).grid(
     column=0, row=3, padx=10, pady=10
 )
-ttk.Button(tab2, text="Draw", command=lambda: update_pbl2(-15)).grid(
+ttk.Button(tab2, text="Волочение", command=lambda: update_pbl2(-15)).grid(
     column=1, row=3, padx=10, pady=10
 )
-ttk.Button(tab2, text="Punch", command=lambda: update_pbl2(2)).grid(
+ttk.Button(tab2, text="Пробивание", command=lambda: update_pbl2(2)).grid(
     column=3, row=2, padx=10, pady=10
 )
-ttk.Button(tab2, text="Bend", command=lambda: update_pbl2(7)).grid(
+ttk.Button(tab2, text="Сгибание", command=lambda: update_pbl2(7)).grid(
     column=4, row=2, padx=10, pady=10
 )
-ttk.Button(tab2, text="Upset", command=lambda: update_pbl2(13)).grid(
+ttk.Button(tab2, text="Осаживание", command=lambda: update_pbl2(13)).grid(
     column=3, row=3, padx=10, pady=10
 )
-ttk.Button(tab2, text="Shrink", command=lambda: update_pbl2(16)).grid(
+ttk.Button(tab2, text="Усадка", command=lambda: update_pbl2(16)).grid(
     column=4, row=3, padx=10, pady=10
 )
 
-resetB = ttk.Button(tab2, text="Reset", command=lambda: reset_path()).grid(
+resetB = ttk.Button(tab2, text="Сброс", command=lambda: reset_path()).grid(
     column=2, row=5, padx=10, pady=10
 )
-calceB = ttk.Button(tab2, text="Calculate", command=calce).grid(
+calceB = ttk.Button(tab2, text="Рассчитать", command=calce).grid(
     column=2, row=4, padx=10, pady=10
 )
 

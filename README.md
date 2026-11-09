@@ -1,9 +1,53 @@
-# Anvil Helper
+# Помощник наковальни TFC
 
-This is the source code for the video \
-[TerraFirmaCraft - Anvil Helper](https://www.youtube.com/watch?v=rVMdPzjS_7s)
+Русская версия программы-помощника для мини-игры с наковальней в
+[TerraFirmaCraft](https://www.curseforge.com/minecraft/mc-mods/terrafirmacraft) —
+моде для Minecraft.
 
-## Resource pack
-The [TFC Anvil Helper](https://www.curseforge.com/minecraft/texture-packs/tfc-anvil-helper) resource pack shows a red line when the "End coordinate" is that makes easier the usage of the anvil.
+Исходная программа создана для видео
+[TerraFirmaCraft - Anvil Helper](https://www.youtube.com/watch?v=rVMdPzjS_7s).
 
-![image](assets/red_line_helper.png)
+## Возможности
+
+- Вкладка **«Путь»** — по последним трём ударам и конечной координате
+  рассчитывает последовательность действий.
+- Вкладка **«Конец»** — считает конечную координату по выполненным ударам,
+  чтобы не записывать её вручную.
+
+Значения действий: «Лёгкий удар» −3, «Средний удар» −6, «Тяжёлый удар» −9,
+«Волочение» −15, «Пробивание» +2, «Сгибание» +7, «Осаживание» +13,
+«Усадка» +16.
+
+## Набор ресурсов
+
+Набор ресурсов [TFC Anvil Helper](https://www.curseforge.com/minecraft/texture-packs/tfc-anvil-helper)
+показывает красную линию на конечной координате — так проще пользоваться наковальней.
+
+![красная линия-помощник](assets/red_line_helper.png)
+
+## Требования
+
+- Python 3.9+
+- Tkinter (пакет `tk` в Arch Linux, `python3-tk` в Debian/Ubuntu)
+- Pillow (`pip install pillow`)
+
+## Запуск
+
+```bash
+python3 tfctk.py
+```
+
+Запускать нужно из каталога с репозиторием: изображения действий берутся из
+`assets/` по относительному пути.
+
+Если Tkinter установлен в нестандартное место (например, распакован локально
+без прав root), используйте `run.sh` — он выставляет пути к библиотекам:
+
+```bash
+./run.sh
+```
+
+## Лицензия
+
+GPL-3.0, см. [LICENSE](LICENSE). Оригинальный автор: dzhemvrot,
+доработка интерфейса: Taeko-ar.
