@@ -1,7 +1,7 @@
 import tkinter as tk
 from collections import deque
 from pathlib import Path
-from tkinter import Menu, messagebox, ttk
+from tkinter import ttk
 
 from PIL import Image, ImageTk
 
@@ -25,7 +25,7 @@ ICON_PATH_BY_VALUE = {
     value: ASSETS_DIR / filename for value, _, filename, _, _ in ACTIONS
 }
 
-BUTTON_ICON_SIZE = 64
+BUTTON_ICON_SIZE = 44
 RESULT_ICON_SIZE = 30
 
 button_icons = {}
@@ -182,28 +182,13 @@ def calculatepath():
         lbl.grid(row=0, column=index, padx=5, sticky="w")
 
 
-def about():
-    messagebox.showinfo(
-        title="О программе",
-        message="""Это программа-помощник для мини-игры с наковальней в TerraFirmaCraft — моде для Minecraft от Robert "Bioxx" Anthony, Amanda "Kittychanley" Halek и других.
-
-Автор программы: dzhemvrot (доработал Taeko-ar)
-Версия программы: 2.0
-Программа распространяется по лицензии GPL-3.0""",
-    )
-
-
-def quitting():
-    root.destroy()
-
-
 def build_action_buttons(parent, handler):
     for value, _name, _filename, column, row in ACTIONS:
         ttk.Button(
             parent,
             image=button_icons[value],
             command=lambda v=value: handler(v),
-        ).grid(column=column, row=row, padx=10, pady=10)
+        ).grid(column=column, row=row, padx=6, pady=6)
 
 
 root = tk.Tk()
@@ -232,14 +217,6 @@ tab1.rowconfigure(0, weight=1)
 tab1.columnconfigure(0, weight=1)
 tab2.rowconfigure(0, weight=1)
 tab2.columnconfigure(0, weight=1)
-
-menubar = Menu(root)
-root.config(menu=menubar)
-
-file_menu = Menu(menubar, tearoff=0)
-file_menu.add_command(label="Выход", command=quitting)
-menubar.add_cascade(label="Файл", menu=file_menu)
-menubar.add_command(label="О программе", command=about)
 
 ttk.Label(tab1, text="Расчёт пути").grid(column=2, row=0, padx=30, pady=0)
 pressedL = ttk.Label(tab1, text=pbl)
