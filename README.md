@@ -1,53 +1,82 @@
-# Помощник наковальни TFC
+# TFC Anvil Helper
 
-Русская версия программы-помощника для мини-игры с наковальней в
-[TerraFirmaCraft](https://www.curseforge.com/minecraft/mc-mods/terrafirmacraft) —
-моде для Minecraft.
+A helper for the anvil minigame in
+[TerraFirmaCraft](https://www.curseforge.com/minecraft/mc-mods/terrafirmacraft),
+a Minecraft mod.
 
-Исходная программа создана для видео
+The original program was made for the video
 [TerraFirmaCraft - Anvil Helper](https://www.youtube.com/watch?v=rVMdPzjS_7s).
 
-## Возможности
+## Features
 
-- Вкладка **«Путь»** — по последним трём ударам и конечной координате
-  рассчитывает последовательность действий.
-- Вкладка **«Конец»** — считает конечную координату по выполненным ударам,
-  чтобы не записывать её вручную.
+- **Path** tab — calculates the sequence of actions from the last three hits
+  and the end coordinate.
+- **End** tab — calculates the end coordinate from the hits already made, so
+  you do not have to write it down manually.
+- **Language selector** in the top-right corner: English (default) or Russian.
 
-Значения действий: «Лёгкий удар» −3, «Средний удар» −6, «Тяжёлый удар» −9,
-«Волочение» −15, «Пробивание» +2, «Сгибание» +7, «Осаживание» +13,
-«Усадка» +16.
+Action values: Light Hit −3, Medium Hit −6, Heavy Hit −9, Draw −15,
+Punch +2, Bend +7, Upset +13, Shrink +16.
 
-## Набор ресурсов
+## Resource pack
 
-Набор ресурсов [TFC Anvil Helper](https://www.curseforge.com/minecraft/texture-packs/tfc-anvil-helper)
-показывает красную линию на конечной координате — так проще пользоваться наковальней.
+The [TFC Anvil Helper](https://www.curseforge.com/minecraft/texture-packs/tfc-anvil-helper)
+resource pack shows a red line at the end coordinate, which makes the anvil
+easier to use.
 
-![красная линия-помощник](assets/red_line_helper.png)
+![red line helper](assets/red_line_helper.png)
 
-## Требования
+## Requirements
 
 - Python 3.9+
-- Tkinter (пакет `tk` в Arch Linux, `python3-tk` в Debian/Ubuntu)
+- Tkinter (`tk` on Arch Linux, `python3-tk` on Debian/Ubuntu)
 - Pillow (`pip install pillow`)
 
-## Запуск
+## Running
 
 ```bash
 python3 tfctk.py
 ```
 
-Запускать нужно из каталога с репозиторием: изображения действий берутся из
-`assets/` по относительному пути.
-
-Если Tkinter установлен в нестандартное место (например, распакован локально
-без прав root), используйте `run.sh` — он выставляет пути к библиотекам:
+If Tkinter is installed in a non-standard location (for example, unpacked
+locally without root), use `run.sh`, which sets the required library paths:
 
 ```bash
 ./run.sh
 ```
 
-## Лицензия
+The interface starts in English. Pick `Русский` in the language selector to
+switch to Russian. You can also set the initial language with an environment
+variable:
 
-GPL-3.0, см. [LICENSE](LICENSE). Оригинальный автор: dzhemvrot,
+```bash
+TFC_LANG=ru ./run.sh
+```
+
+## License
+
+GPL-3.0, see [LICENSE](LICENSE). Original author: dzhemvrot, interface
+enhancements: Taeko-ar.
+
+---
+
+# Помощник наковальни TFC (по-русски)
+
+Программа-помощник для мини-игры с наковальней в TerraFirmaCraft.
+
+- Вкладка **«Путь»** — по последним трём ударам и конечной координате
+  рассчитывает последовательность действий.
+- Вкладка **«Конец»** — считает конечную координату по выполненным ударам.
+- Переключатель языка в правом верхнем углу: английский (по умолчанию) или
+  русский. Начальный язык можно задать переменной окружения
+  `TFC_LANG=ru ./run.sh`.
+
+Значения действий: «Лёгкий удар» −3, «Средний удар» −6, «Тяжёлый удар» −9,
+«Волочение» −15, «Пробивание» +2, «Сгибание» +7, «Осаживание» +13,
+«Усадка» +16.
+
+Запускать нужно из каталога с репозиторием: изображения действий берутся из
+`assets/`.
+
+Лицензия GPL-3.0, см. [LICENSE](LICENSE). Оригинальный автор: dzhemvrot,
 доработка интерфейса: Taeko-ar.
