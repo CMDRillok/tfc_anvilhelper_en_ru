@@ -1,29 +1,80 @@
 import tkinter as tk
+from collections import deque
+from pathlib import Path
 from tkinter import Menu, messagebox, ttk
 
 from PIL import Image, ImageTk
 
-pbl = [0, 0, 0]
-pbl2 = []
-lstp = [2, 7, 13, 16]
-lstn = [-3, -6, -9, -15]
-newlst = []
-queued_images = []
+BASE_DIR = Path(__file__).resolve().parent
+ASSETS_DIR = BASE_DIR / "assets"
 
-images = {
-    "Лёгкий удар": "assets/light_hit.png",
-    "Средний удар": "assets/medium_hit.png",
-    "Тяжёлый удар": "assets/heavy_hit.png",
-    "Волочение": "assets/draw.png",
-    "Пробивание": "assets/punch.png",
-    "Сгибание": "assets/bend.png",
-    "Осаживание": "assets/upset.png",
-    "Усадка": "assets/shrink.png",
+# (значение действия, подпись, файл иконки, колонка, строка)
+ACTIONS = [
+    (-3, "Лёгкий удар", "light_hit.png", 0, 2),
+    (-6, "Средний удар", "medium_hit.png", 1, 2),
+    (-9, "Тяжёлый удар", "heavy_hit.png", 0, 3),
+    (-15, "Волочение", "draw.png", 1, 3),
+    (2, "Пробивание", "punch.png", 3, 2),
+    (7, "Сгибание", "bend.png", 4, 2),
+    (13, "Осаживание", "upset.png", 3, 3),
+    (16, "Усадка", "shrink.png", 4, 3),
+]
+
+ACTION_BY_VALUE = {value: name for value, name, _, _, _ in ACTIONS}
+ICON_PATH_BY_VALUE = {
+    value: ASSETS_DIR / filename for value, _, filename, _, _ in ACTIONS
 }
 
+BUTTON_ICON_SIZE = 64
+RESULT_ICON_SIZE = 30
 
-def closest(lst, K):
-    return lst[min(range(len(lst)), key=lambda i: abs(lst[i] - K))]
+button_icons = {}
+result_icons = {}
+
+pbl = [0, 0, 0]
+pbl2 = []
+queued_images = []
+
+
+def load_icon(value, size):
+    image = Image.open(ICON_PATH_BY_VALUE[value])
+    image = image.resize((size, size), Image.LANCZOS)
+    return ImageTk.PhotoImage(image)
+
+
+def find_path(target):
+    """Кратчайшая последовательность действий, дающая в сумме target."""
+    if target == 0:
+        return []
+
+    # Оптимальный путь не уходит далеко от цели: ограничиваем область поиска.
+    limit = abs(target) + 64
+    low, high = -limit, limit
+    previous = {0: None}
+    queue = deque([0])
+
+    while queue:
+        current = queue.popleft()
+        for value in ACTION_BY_VALUE:
+            nxt = current + value
+            if nxt in previous or not low <= nxt <= high:
+                continue
+            previous[nxt] = (current, value)
+            if nxt == target:
+                queue.clear()
+                break
+            queue.append(nxt)
+
+    if target not in previous:
+        return None
+
+    path = []
+    node = target
+    while previous[node] is not None:
+        node, value = previous[node]
+        path.append(value)
+    path.reverse()
+    return path
 
 
 def update_pbl(value):
@@ -48,15 +99,8 @@ def update_label2():
 
 
 def add_image_to_queue(value):
-    action_name = next(
-        (name for name, val in images.items() if val == value), None
-    )
-    if action_name and action_name in images:
-        img = ImageTk.PhotoImage(
-            Image.open(images[action_name]).resize((30, 30))
-        )
-        queued_images.append(img)
-        display_queue()
+    queued_images.append(result_icons[value])
+    display_queue()
 
 
 def display_queue():
@@ -84,9 +128,16 @@ def reset_path():
     update_label2()
 
 
+def reset_pbl2():
+    global pbl2
+    pbl2 = []
+    pressedL2.config(text="")
+
+
 def clear_result():
     for widget in result_frame.winfo_children():
         widget.destroy()
+    resultP.config(text="")
 
 
 def calce():
@@ -95,34 +146,22 @@ def calce():
 
 
 def calculatepath():
-    newlst = []
-    a = pbl[2]
-    b = pbl[1]
-    c = pbl[0]
-    cn = cente.get()
     try:
-        cn = int(cn)
-        bf = ((cn - a) - b) - c
-        fs = 0
+        target = int(cente.get())
     except ValueError:
         resultP.config(text="Ошибка! Введите конечную координату в поле ввода.")
         return
 
-    while fs != bf:
-        x = bf - fs
-        if x > 0:
-            dif = closest(lstp, x)
-            fs += dif
-            newlst.append(dif)
-        if x < 0:
-            dif = closest(lstn, x)
-            fs += dif
-            newlst.append(dif)
+    a, b, c = pbl[2], pbl[1], pbl[0]
+    remainder = target - (a + b + c)
+    path = find_path(remainder)
+    if path is None:
+        resultP.config(text="Не удалось рассчитать путь.")
+        return
 
-    newlst.append(c)
-    newlst.append(b)
-    newlst.append(a)
+    newlst = path + [a, b, c]
 
+    resultP.config(text="")
     for widget in result_frame.winfo_children():
         widget.destroy()
 
@@ -134,33 +173,13 @@ def calculatepath():
     container.columnconfigure(0, weight=1)
 
     for index, action in enumerate(newlst):
-        action_name = None
-        if action == 2:
-            action_name = "Пробивание"
-        elif action == 7:
-            action_name = "Сгибание"
-        elif action == 13:
-            action_name = "Осаживание"
-        elif action == 16:
-            action_name = "Усадка"
-        elif action == -3:
-            action_name = "Лёгкий удар"
-        elif action == -6:
-            action_name = "Средний удар"
-        elif action == -9:
-            action_name = "Тяжёлый удар"
-        elif action == -15:
-            action_name = "Волочение"
-
-        if action_name in images:
-            img = ImageTk.PhotoImage(
-                Image.open(images[action_name]).resize((30, 30))
-            )
-            lbl = tk.Label(
-                container, text=action_name, compound=tk.TOP, image=img
-            )
-            lbl.image = img
-            lbl.grid(row=0, column=index, padx=5, sticky="w")
+        action_name = ACTION_BY_VALUE[action]
+        img = result_icons[action]
+        lbl = tk.Label(
+            container, text=action_name, compound=tk.TOP, image=img
+        )
+        lbl.image = img
+        lbl.grid(row=0, column=index, padx=5, sticky="w")
 
 
 def about():
@@ -178,10 +197,27 @@ def quitting():
     root.destroy()
 
 
+def build_action_buttons(parent, handler):
+    for value, _name, _filename, column, row in ACTIONS:
+        ttk.Button(
+            parent,
+            image=button_icons[value],
+            command=lambda v=value: handler(v),
+        ).grid(column=column, row=row, padx=10, pady=10)
+
+
 root = tk.Tk()
 root.title("Помощник наковальни TFC")
+root.minsize(560, 420)
 root.rowconfigure(0, weight=1)
 root.columnconfigure(0, weight=1)
+
+button_icons = {
+    value: load_icon(value, BUTTON_ICON_SIZE) for value in ACTION_BY_VALUE
+}
+result_icons = {
+    value: load_icon(value, RESULT_ICON_SIZE) for value in ACTION_BY_VALUE
+}
 
 tabControl = ttk.Notebook(root)
 tabControl.grid(row=0, column=0, sticky="nsew")
@@ -219,30 +255,7 @@ for i in range(5):
     tab1.columnconfigure(i, weight=1)
     tab1.rowconfigure(i, weight=1)
 
-ttk.Button(tab1, text="Лёгкий удар", command=lambda: update_pbl(-3)).grid(
-    column=0, row=2, padx=10, pady=10
-)
-ttk.Button(tab1, text="Средний удар", command=lambda: update_pbl(-6)).grid(
-    column=1, row=2, padx=10, pady=10
-)
-ttk.Button(tab1, text="Тяжёлый удар", command=lambda: update_pbl(-9)).grid(
-    column=0, row=3, padx=10, pady=10
-)
-ttk.Button(tab1, text="Волочение", command=lambda: update_pbl(-15)).grid(
-    column=1, row=3, padx=10, pady=10
-)
-ttk.Button(tab1, text="Пробивание", command=lambda: update_pbl(2)).grid(
-    column=3, row=2, padx=10, pady=10
-)
-ttk.Button(tab1, text="Сгибание", command=lambda: update_pbl(7)).grid(
-    column=4, row=2, padx=10, pady=10
-)
-ttk.Button(tab1, text="Осаживание", command=lambda: update_pbl(13)).grid(
-    column=3, row=3, padx=10, pady=10
-)
-ttk.Button(tab1, text="Усадка", command=lambda: update_pbl(16)).grid(
-    column=4, row=3, padx=10, pady=10
-)
+build_action_buttons(tab1, update_pbl)
 
 cente = ttk.Entry(tab1)
 cente.grid(column=2, row=3)
@@ -267,35 +280,12 @@ tab2.columnconfigure(0, weight=1)
 tab2.rowconfigure(0, weight=1)
 tab2.columnconfigure(4, weight=1)
 
-ttk.Button(tab2, text="Лёгкий удар", command=lambda: update_pbl2(-3)).grid(
-    column=0, row=2, padx=10, pady=10
-)
-ttk.Button(tab2, text="Средний удар", command=lambda: update_pbl2(-6)).grid(
-    column=1, row=2, padx=10, pady=10
-)
-ttk.Button(tab2, text="Тяжёлый удар", command=lambda: update_pbl2(-9)).grid(
-    column=0, row=3, padx=10, pady=10
-)
-ttk.Button(tab2, text="Волочение", command=lambda: update_pbl2(-15)).grid(
-    column=1, row=3, padx=10, pady=10
-)
-ttk.Button(tab2, text="Пробивание", command=lambda: update_pbl2(2)).grid(
-    column=3, row=2, padx=10, pady=10
-)
-ttk.Button(tab2, text="Сгибание", command=lambda: update_pbl2(7)).grid(
-    column=4, row=2, padx=10, pady=10
-)
-ttk.Button(tab2, text="Осаживание", command=lambda: update_pbl2(13)).grid(
-    column=3, row=3, padx=10, pady=10
-)
-ttk.Button(tab2, text="Усадка", command=lambda: update_pbl2(16)).grid(
-    column=4, row=3, padx=10, pady=10
-)
+build_action_buttons(tab2, update_pbl2)
 
-resetB = ttk.Button(tab2, text="Сброс", command=lambda: reset_path()).grid(
+ttk.Button(tab2, text="Сброс", command=reset_pbl2).grid(
     column=2, row=5, padx=10, pady=10
 )
-calceB = ttk.Button(tab2, text="Рассчитать", command=calce).grid(
+ttk.Button(tab2, text="Рассчитать", command=calce).grid(
     column=2, row=4, padx=10, pady=10
 )
 
