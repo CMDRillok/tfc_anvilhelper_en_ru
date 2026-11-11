@@ -48,6 +48,19 @@ TRANSLATIONS = {
         "action_bend": "Bend",
         "action_upset": "Upset",
         "action_shrink": "Shrink",
+        "tab_about": "About",
+        "about_text": """TFC Anvil Helper 2.0
+
+A helper for the anvil minigame in TerraFirmaCraft,
+a Minecraft mod by Robert "Bioxx" Anthony,
+Amanda "Kittychanley" Halek and others.
+
+Original author: dzhemvrot
+Interface enhancements: Taeko-ar
+English/Russian localization and improvements: CMDRillok
+
+License: GPL-3.0
+https://github.com/dzhemvrot/tfc_anvilhelper""",
     },
     "ru": {
         "title": "Помощник наковальни TFC",
@@ -70,6 +83,19 @@ TRANSLATIONS = {
         "action_bend": "Сгибание",
         "action_upset": "Осаживание",
         "action_shrink": "Усадка",
+        "tab_about": "О программе",
+        "about_text": """Помощник наковальни TFC 2.0
+
+Помощник для мини-игры с наковальней в TerraFirmaCraft —
+моде для Minecraft от Robert "Bioxx" Anthony,
+Amanda "Kittychanley" Halek и других.
+
+Оригинальный автор: dzhemvrot
+Доработка интерфейса: Taeko-ar
+Английская/русская локализация и улучшения: CMDRillok
+
+Лицензия: GPL-3.0
+https://github.com/dzhemvrot/tfc_anvilhelper""",
     },
 }
 
@@ -280,6 +306,8 @@ def apply_language():
     root.title(t("title"))
     tabControl.tab(tab1, text=t("tab_path"))
     tabControl.tab(tab2, text=t("tab_end"))
+    tabControl.tab(tab3, text=t("tab_about"))
+    about_label.config(text=t("about_text"))
     language_label.config(text=t("language"))
     path_title.config(text=t("path_title"))
     end_title.config(text=t("end_title"))
@@ -335,9 +363,11 @@ tabControl.grid(row=1, column=0, sticky="nsew", padx=0, pady=0)
 
 tab1 = ttk.Frame(tabControl)
 tab2 = ttk.Frame(tabControl)
+tab3 = ttk.Frame(tabControl)
 
 tabControl.add(tab1, text=t("tab_path"))
 tabControl.add(tab2, text=t("tab_end"))
+tabControl.add(tab3, text=t("tab_about"))
 
 tab1.rowconfigure(0, weight=1)
 tab1.columnconfigure(0, weight=1)
@@ -387,6 +417,22 @@ end_reset_button = ttk.Button(tab2, text=t("reset"), command=reset_pbl2)
 end_reset_button.grid(column=2, row=5, padx=10, pady=10)
 end_calculate_button = ttk.Button(tab2, text=t("calculate"), command=calce)
 end_calculate_button.grid(column=2, row=4, padx=10, pady=10)
+
+# Вкладка 3 (О программе)
+tab3.columnconfigure(0, weight=1)
+tab3.rowconfigure(0, weight=1)
+
+about_frame = ttk.Frame(tab3, padding=24)
+about_frame.grid(row=0, column=0, sticky="n")
+
+about_label = ttk.Label(
+    about_frame,
+    text=t("about_text"),
+    justify="left",
+    anchor="w",
+    font=("TkDefaultFont", 11),
+)
+about_label.grid(row=0, column=0, sticky="w")
 
 apply_language()
 root.mainloop()
